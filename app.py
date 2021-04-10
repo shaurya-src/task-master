@@ -13,9 +13,9 @@ class Todo(db.Model):
 
     # Returns default representation for the object
     def __repr__(self):
-        return '<task %r>' %self.id
+        return '<Task %r>' % self.id
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
@@ -26,15 +26,15 @@ def index():
             db.session.commit()
             return redirect('/')
 
-        except Exception as e:
+        except Exception:
             return "There was an issue."
     
     else:
         tasks = Todo.query.order_by(Todo.date_created).all()
-        return render_template('index.html')
+        return render_template('index.html', tasks=tasks)
 
 @app.route('/delete/<int:id>')
-def delete():
+def delete(id):
     task_to_delete = Todo.query.get_or_404(id)
 
     try:
@@ -46,7 +46,7 @@ def delete():
         return "There was an issue."
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update():
+def update(id):
     task = Todo.query.get_or_404(id)
 
     if request.method == 'POST':
